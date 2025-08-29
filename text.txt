@@ -1,0 +1,42 @@
+Anomaly 
+
+
+10. Social Media & Content Platforms
+	•	Problem: Detecting bots or fake accounts.
+	•	Anomalies:
+	•	User posting 500 times in one hour.
+	•	Unusual spike in followers overnight.
+	•	Action Taken: Block/bot detection system.
+	•	Techniques used: Clustering, anomaly scores, graph analysis.
+
+6. Energy Sector
+	•	Problem: Detecting energy theft or equipment failure.
+	•	Anomalies:
+	•	Electricity consumption abnormally low/high.
+	•	Sudden voltage spikes in smart meters.
+	•	Action Taken: Inspect wiring, prevent energy theft.
+	•	Techniques used: Time series anomaly detection (LSTMs, ARIMA).
+
+17. Supply Chain & Logistics
+	•	Problem: Tracking unusual shipment/delivery patterns.
+	•	Anomalies:
+	•	Delivery takes much longer than expected.
+	•	Shipment weight doesn’t match invoice.
+	•	Action: Investigate theft, damage, or route issues.
+	•	Techniques: Time series + anomaly scoring.
+
+2. Customer Reviews & Feedback
+	•	Problem: Identifying fake or unusual reviews.
+	•	Anomalies:
+• Product gets 1,000 five-star reviews in a single day.
+• Reviews with repetitive, bot-like text.
+	•	Action: Filter suspicious reviews, adjust recommendation scores.
+	•	Techniques: NLP embeddings + clustering, One-Class SVM.
+
+2. Customer Reviews & Feedback
+	•	Problem: Identifying fake or unusual reviews.
+	•	Anomalies:
+• Product gets 1,000 five-star reviews in a single day.
+• Reviews with repetitive, bot-like text.
+	•	Action: Filter suspicious reviews, adjust recommendation scores.
+	•	Techniques: NLP embeddings + clustering, One-Class SVM.
