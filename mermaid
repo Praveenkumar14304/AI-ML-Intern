@@ -1,0 +1,52 @@
+flowchart TD
+    A[User Interface] --> B[Upload CSV File]
+    A --> C{Upload PPT Template?}
+    C -- Yes --> D[Extract Template Styles to JSON]
+    C -- No --> E[Select Theme from UI]
+    A --> F[Select Features for Analysis]
+
+    subgraph G[Phase 1: Data Ingestion]
+        B --> H[Read CSV in Chunks]
+        H --> I[Create Data Sample<br>10,000 rows]
+        I --> J[Basic Data Cleaning<br>& Type Inference]
+        J --> K[Generate data_description.json]
+    end
+
+    F --> L{Features Selected?}
+    L -- Yes --> M[Use Selected Features]
+    L -- No --> N[Use All Features after Filtering]
+    
+    subgraph O[Phase 2: Data Processing]
+        M --> P[Semantic Filtering]
+        N --> P
+        P --> Q[Separate by Data Type:<br>Numerical, Categorical, Text, DateTime]
+        Q --> R[Correlation Analysis]
+        R --> S[Identify Top Features<br>if none selected]
+        S --> T[Dynamic Plot Generation<br>1 plot per feature]
+        T --> U[Generate analysis_insights.json]
+        R --> V[Generate correlation_analysis.json]
+    end
+
+    subgraph W[Phase 3: LLM Narrative Generation]
+        K --> X[Combine JSON Files into Prompt]
+        U --> X
+        V --> X
+        X --> Y[Mistral 7B Inference]
+        Y --> Z[Generate presentation_narrative.json]
+    end
+
+    subgraph AA[Phase 4: PPT Assembly & Delivery]
+        D --> AB[Apply Template Styles]
+        E --> AB
+        Z --> AB
+        U --> AB
+        AB --> AC[Build PowerPoint with python-pptx]
+        AC --> AD[Generate Final PPTX File]
+        AD --> AE[Provide Download Link]
+        AE --> AF[Cleanup Temporary Files]
+    end
+
+    style G fill:#e1f5fe
+    style O fill:#f3e5f5
+    style W fill:#e8f5e9
+    style AA fill:#fff3e0
