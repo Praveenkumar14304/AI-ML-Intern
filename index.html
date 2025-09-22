@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataPresenter - Transform Data into Presentations</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Navigation Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="app-title">DataPresenter</h1>
+                <p class="app-subtitle">Transform data into presentations</p>
+            </div>
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-tab="upload">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Upload & Analyze</span>
+                </button>
+                <button class="nav-tab" data-tab="customize">
+                    <span class="nav-icon">🎨</span>
+                    <span class="nav-text">Customize</span>
+                </button>
+                <button class="nav-tab" data-tab="preview">
+                    <span class="nav-icon">👀</span>
+                    <span class="nav-text">Preview</span>
+                </button>
+                <button class="nav-tab" data-tab="download">
+                    <span class="nav-icon">📥</span>
+                    <span class="nav-text">Download & Export</span>
+                </button>
+            </div>
+            <div class="sidebar-footer">
+                <div class="upload-status">
+                    <div class="status-indicator" id="uploadStatus"></div>
+                    <span class="status-text" id="statusText">Ready to upload</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Tab 1: Upload & Analyze -->
+            <div class="tab-content active" id="upload-tab">
+                <div class="tab-header">
+                    <h2>Upload & Analyze Data</h2>
+                    <p>Upload your CSV or Excel file to begin analysis</p>
+                </div>
+
+                <div class="content-grid">
+                    <div class="content-main">
+                        <!-- File Upload Zone -->
+                        <div class="upload-zone" id="uploadZone">
+                            <div class="upload-icon">📁</div>
+                            <h3>Drag & drop your file here</h3>
+                            <p>Supports CSV, XLS, XLSX files up to 50MB</p>
+                            <button class="btn btn--primary" id="selectFileBtn">Select File</button>
+                            <input type="file" id="fileInput" accept=".csv,.xls,.xlsx" hidden>
+                            <div class="upload-progress hidden" id="uploadProgress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill"></div>
+                                </div>
+                                <span class="progress-text">Uploading...</span>
+                            </div>
+                        </div>
+
+                        <!-- View Toggle -->
+                        <div class="view-toggle hidden" id="viewToggle">
+                            <div class="toggle-container">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="viewToggleSwitch">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="toggle-label" id="toggleLabel">Full Dataset View</span>
+                            </div>
+                        </div>
+
+                        <!-- Data Preview Section -->
+                        <div class="data-preview hidden" id="dataPreview">
+                            <div class="preview-header">
+                                <h3>Data Preview</h3>
+                                <div class="preview-controls">
+                                    <input type="text" class="form-control search-input" placeholder="Search columns..." id="columnSearch">
+                                </div>
+                            </div>
+                            <div class="table-container">
+                                <table class="data-table" id="dataTable">
+                                    <thead>
+                                        <tr id="tableHeaders"></tr>
+                                    </thead>
+                                    <tbody id="tableBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="pagination-controls">
+                                <button class="btn btn--outline btn--sm" id="prevPage" disabled>Previous</button>
+                                <span class="page-info" id="pageInfo">Page 1 of 1</span>
+                                <button class="btn btn--outline btn--sm" id="nextPage" disabled>Next</button>
+                            </div>
+                        </div>
+
+                        <!-- PII Detection -->
+                        <div class="pii-detection hidden" id="piiDetection">
+                            <div class="pii-summary">
+                                <span class="pii-count" id="piiCount">0 PII columns detected</span>
+                                <button class="btn btn--outline btn--sm" id="togglePiiDetails">Show Details</button>
+                            </div>
+                            <div class="pii-details hidden" id="piiDetails"></div>
+                        </div>
+
+                        <!-- Column Selection Carousel -->
+                        <div class="column-selection hidden" id="columnSelection">
+                            <h3>Column Selection</h3>
+                            <div class="columns-carousel">
+                                <div class="columns-grid" id="columnsGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-sidebar">
+                        <!-- Dataset Metrics -->
+                        <div class="metrics-panel" id="metricsPanel">
+                            <h3>Dataset Metrics</h3>
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="rowCount">-</div>
+                                    <div class="metric-label">Rows</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-value" id="columnCount">-</div>
+                                    <div class="metric-label">Columns</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-value" id="nullValues">-</div>
+                                    <div class="metric-label">Nulls</div>
+                                </div>
+                                <div class="metric-card" id="completenessCard">
+                                    <div class="metric-value" id="completeness">-</div>
+                                    <div class="metric-label">Completeness</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Smart Suggestions -->
+                        <div class="suggestions-panel hidden" id="suggestionsPanel">
+                            <h3>Suggested Columns</h3>
+                            <p class="suggestions-desc">Top 6 correlated columns</p>
+                            <div class="suggestions-list" id="suggestionsList"></div>
+                            <button class="btn btn--secondary btn--sm btn--full-width" id="addAllSuggestions">Add All to Analysis</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Customize -->
+            <div class="tab-content" id="customize-tab">
+                <div class="tab-header">
+                    <h2>Customize Presentation</h2>
+                    <p>Configure templates, analysis types, and presentation settings</p>
+                </div>
+
+                <div class="customize-content">
+                    <!-- Template Selection -->
+                    <section class="template-section">
+                        <h3>Template Selection</h3>
+                        <div class="template-toggle">
+                            <button class="toggle-btn active" data-template-type="predefined">Choose Template</button>
+                            <button class="toggle-btn" data-template-type="custom">Upload Custom PPT</button>
+                        </div>
+
+                        <div class="template-options" id="predefinedTemplates">
+                            <div class="templates-grid">
+                                <div class="template-card active" data-template="modern_blue">
+                                    <div class="template-preview modern-blue"></div>
+                                    <span class="template-name">Modern Blue</span>
+                                </div>
+                                <div class="template-card" data-template="professional">
+                                    <div class="template-preview professional"></div>
+                                    <span class="template-name">Professional</span>
+                                </div>
+                                <div class="template-card" data-template="executive">
+                                    <div class="template-preview executive"></div>
+                                    <span class="template-name">Executive</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="template-options hidden" id="customTemplate">
+                            <div class="upload-zone small">
+                                <div class="upload-icon">📎</div>
+                                <h4>Upload custom PowerPoint template</h4>
+                                <p>Supports PPTX, PPT files</p>
+                                <input type="file" accept=".pptx,.ppt" id="customTemplateInput" hidden>
+                                <button class="btn btn--outline" id="selectTemplateBtn">Select Template</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Analysis Type Selection -->
+                    <section class="analysis-section">
+                        <h3>Analysis Type</h3>
+                        <div class="analysis-types">
+                            <div class="analysis-card" data-analysis="dashboard">
+                                <div class="analysis-icon">📊</div>
+                                <h4>Dashboard</h4>
+                                <p>Multiple charts (1-6) in grid layout</p>
+                            </div>
+                            <div class="analysis-card" data-analysis="insights_charts">
+                                <div class="analysis-icon">📈</div>
+                                <h4>Insights + Charts</h4>
+                                <p>Individual insights with charts</p>
+                            </div>
+                            <div class="analysis-card" data-analysis="insights_only">
+                                <div class="analysis-icon">📝</div>
+                                <h4>Insights Only</h4>
+                                <p>Text-based analysis only</p>
+                            </div>
+                            <div class="analysis-card" data-analysis="comparison">
+                                <div class="analysis-icon">⚖️</div>
+                                <h4>Comparison</h4>
+                                <p>X vs Y axis analysis</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Dynamic Configuration -->
+                    <section class="config-section" id="analysisConfig">
+                        <h3>Configuration</h3>
+                        <div class="config-content" id="configContent">
+                            <p class="config-placeholder">Select an analysis type above to configure charts and settings.</p>
+                        </div>
+                    </section>
+
+                    <!-- Chart Preview Container -->
+                    <section class="chart-preview-section" id="chartPreviewSection">
+                        <h3>Chart Previews</h3>
+                        <div class="chart-preview-container" id="chartPreviewContainer">
+                            <div class="preview-placeholder">
+                                <div class="preview-placeholder-icon">📊</div>
+                                <p>Chart previews will appear here after configuration</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Advanced Customization -->
+                    <section class="customization-section">
+                        <div class="section-header">
+                            <h3>Advanced Customization</h3>
+                            <button class="btn btn--outline btn--sm" id="toggleAdvanced">Show Options</button>
+                        </div>
+                        <div class="advanced-options hidden" id="advancedOptions">
+                            <div class="options-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Presentation Title</label>
+                                    <input type="text" class="form-control" id="presentationTitle" placeholder="Auto-generated from data">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Company Name</label>
+                                    <input type="text" class="form-control" id="companyName" placeholder="Your Company">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Logo Upload</label>
+                                    <input type="file" class="form-control" id="logoUpload" accept=".png,.jpg,.jpeg">
+                                    <div class="logo-position">
+                                        <label class="form-label">Logo Position</label>
+                                        <select class="form-control" id="logoPosition">
+                                            <option value="top-left">Top Left</option>
+                                            <option value="top-right">Top Right</option>
+                                            <option value="top-center">Top Center</option>
+                                            <option value="bottom-left">Bottom Left</option>
+                                            <option value="bottom-right">Bottom Right</option>
+                                            <option value="bottom-center">Bottom Center</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- LLM Query -->
+                    <section class="llm-section">
+                        <h3>Custom Analysis Query</h3>
+                        <textarea class="form-control" id="llmQuery" rows="4" placeholder="Enter custom analysis questions or requests for your data... For example: 'Identify key trends and patterns', 'Find correlations between numerical columns', or 'Suggest business insights and recommendations'"></textarea>
+                        <div class="example-prompts">
+                            <p>Example prompts:</p>
+                            <div class="prompt-tags">
+                                <span class="prompt-tag" data-prompt="Identify key trends and patterns in the data">Key trends</span>
+                                <span class="prompt-tag" data-prompt="Find correlations between numerical columns">Find correlations</span>
+                                <span class="prompt-tag" data-prompt="Suggest business insights and recommendations">Business insights</span>
+                            </div>
+                        </div>
+                        <button class="btn btn--primary" id="generateInsights">Generate Insights</button>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Tab 3: Preview -->
+            <div class="tab-content" id="preview-tab">
+                <div class="tab-header">
+                    <h2>Presentation Preview</h2>
+                    <p>Review your generated presentation before download</p>
+                </div>
+
+                <div class="preview-container">
+                    <div class="slide-navigation">
+                        <h3>Slides</h3>
+                        <div class="slides-list" id="slidesList"></div>
+                    </div>
+
+                    <div class="slide-viewer">
+                        <div class="viewer-controls">
+                            <button class="btn btn--outline btn--sm" id="zoomOut">Zoom Out</button>
+                            <span class="zoom-level" id="zoomLevel">100%</span>
+                            <button class="btn btn--outline btn--sm" id="zoomIn">Zoom In</button>
+                            <button class="btn btn--outline btn--sm" id="fullscreen">Fullscreen</button>
+                        </div>
+                        <div class="slide-preview" id="slidePreview">
+                            <div class="slide-content" id="currentSlide">
+                                <h1>Welcome to DataPresenter</h1>
+                                <p>Upload your data to generate a professional presentation</p>
+                                <p class="subtitle">Your slides will appear here after data analysis</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Download & Export -->
+            <div class="tab-content" id="download-tab">
+                <div class="tab-header">
+                    <h2>Download & Export</h2>
+                    <p>Download your completed presentation</p>
+                </div>
+
+                <div class="download-content">
+                    <div class="download-main">
+                        <div class="presentation-preview">
+                            <div class="preview-thumbnail" id="previewThumbnail">
+                                <span class="slide-number">1</span>
+                                <div class="thumbnail-content">
+                                    <h4 id="thumbnailTitle">Data Analysis Presentation</h4>
+                                </div>
+                            </div>
+                            <div class="preview-meta">
+                                <h3 id="finalTitle">Data Analysis Presentation</h3>
+                                <div class="meta-details">
+                                    <span id="slideCount">8 slides</span> •
+                                    <span id="chartCount">4 charts</span> •
+                                    <span id="creationDate">Created today</span>
+                                </div>
+                                <div class="file-size">
+                                    <span>Estimated size: <strong id="fileSize">2.4 MB</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="download-options">
+                            <button class="btn btn--primary btn--lg btn--full-width" id="downloadPPTX">
+                                📥 Download PPTX
+                            </button>
+                            <button class="btn btn--outline btn--lg btn--full-width" id="downloadPDF">
+                                📄 Download PDF
+                            </button>
+                        </div>
+
+                        <div class="export-history">
+                            <h4>Export History</h4>
+                            <div class="history-list" id="historyList">
+                                <p class="no-history">No previous exports</p>
+                            </div>
+                            <button class="btn btn--outline btn--sm btn--full-width" id="clearHistory">Clear History</button>
+                        </div>
+                    </div>
+
+                    <div class="download-sidebar">
+                        <div class="generation-metrics">
+                            <h4>Generation Metrics</h4>
+                            <div class="metrics-list">
+                                <div class="metric-item">
+                                    <span class="metric-label">Generation Time</span>
+                                    <span class="metric-value" id="generationTime">-</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">File Size</span>
+                                    <span class="metric-value" id="downloadFileSize">-</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Slides Created</span>
+                                    <span class="metric-value" id="downloadSlideCount">-</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Charts Generated</span>
+                                    <span class="metric-value" id="downloadChartCount">-</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Columns Analyzed</span>
+                                    <span class="metric-value" id="analyzedColumns">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay hidden" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <p class="loading-text" id="loadingText">Processing your data...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
