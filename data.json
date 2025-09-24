@@ -1,0 +1,22 @@
+{
+  "dashboard": {
+    "revenue": "pie",
+    "bookings": "bar",
+    "adr": "line"
+  },
+  "insights": [
+    "lead_time",
+    "country",
+    "customer_type"
+],
+  "insights_charts": {
+    "adr": "pie",
+    "stays_in_week_nights": "pie",
+    "reservation_status":"line",
+    "country":"scatter"
+  },
+  "comparison": {
+    "country_vs_reservation_status": "bar",
+    "lead_time_vs_reservation_status": "line"
+  }
+}
